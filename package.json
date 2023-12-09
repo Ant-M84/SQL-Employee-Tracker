@@ -7,10 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "Ant-M84",
+  "author": "",
   "license": "ISC",
   "dependencies": {
+    "console.table": "^0.10.0",
     "inquirer": "^8.2.4",
-    "mysql2": "^8.2.0"
+    "mysql2": "^3.6.5"
   }
 }
