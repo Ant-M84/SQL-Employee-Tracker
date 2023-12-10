@@ -3,6 +3,7 @@ const mysql = require('mysql2');
 const inquirer = require('inquirer');
 require('dotenv').config();
 
+// Connection to database via MySQL //
 const db = mysql.createConnection({
     host: 'localhost',
     port: process.env.PORT || 3306,
@@ -11,11 +12,7 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME,
 });
 
-//db.connect((err) => {
-//    if (err) throw err;
-//trackerMenu();
-//});
-
+// Database Menu and Directory Links //
 const trackerMenu = () => {
     inquirer.prompt ({  
         name: 'options',
@@ -56,8 +53,10 @@ const trackerMenu = () => {
     .catch(err => console.error(err));
 };
 
+// Call Menu to begin on application start //
 trackerMenu();
 
+// Database queries to display table data //
 const viewDepartment = () => {
     db.query(`SELECT * FROM department`, (err, res) => {
         err ? console.error(err) : console.table(res);
@@ -79,6 +78,7 @@ const viewEmployees = () => {
     })
 };
 
+// Database queries to modify table content based on user options //
 const addDepartment = () => {
     inquirer.prompt(
         {
@@ -105,7 +105,7 @@ const addRole = () => {
                 name: department.name,
                 value: department.id,
             };
-        });
+        })
         inquirer.prompt ([
         {
             type: 'input',
@@ -133,8 +133,8 @@ const addRole = () => {
             }
         );
         viewRoles();
-        });
-    });
+        })
+    })
 };
 
 const addEmployee = () => {
@@ -199,7 +199,7 @@ const updateEmployee = () => {
                     value: role.id,
                 }
             })
-            inquirer.prompt(
+            inquirer.prompt([
                 {
                     type: 'list',
                     name: 'selectEmployee',
@@ -212,7 +212,7 @@ const updateEmployee = () => {
                     message: 'What is the new role for the employee?',
                     choices: roles,
                 }
-            )
+            ])
             .then(ans => {
                 db.query(`UPDATE employee SET ? WHERE ?`,
                 [
