@@ -1,19 +1,20 @@
 // Call dependencies //
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const cTable = require('console.table');
+require('dotenv').config();
 
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'employee_db'
+    port: process.env.PORT || 3306,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
 });
 
-db.connect((err) => {
-    if (err) throw err;
-trackerMenu();
-});
+//db.connect((err) => {
+//    if (err) throw err;
+//trackerMenu();
+//});
 
 const trackerMenu = () => {
     inquirer.prompt ({  
@@ -54,6 +55,8 @@ const trackerMenu = () => {
     })
     .catch(err => console.error(err));
 };
+
+trackerMenu();
 
 const viewDepartment = () => {
     db.query(`SELECT * FROM department`, (err, res) => {
@@ -101,41 +104,41 @@ const addRole = () => {
             return {
                 name: department.name,
                 value: department.id,
-            }
-        })
-        inquirer.prompt (
+            };
+        });
+        inquirer.prompt ([
         {
             type: 'input',
             message: "What is the name of the new Role?",
-            name: "roleTitle"
+            name: "roleTitle",
         },
         {
             type: "input",
             message: "What is the salary of the new Role?",
-            name: "roleSalary"
+            name: "roleSalary",
         },
         {
             type: "list",
             message: "Which department is the role in?",
+            name: "departmentId",
             choices: departments,
-            name: departmentId
         }
-    )
+    ])
     .then(ans => {
-        db.query(`INSERT INTO role SET ?`,
+        db.query(`INSERT INTO roles SET ?`,
             {
-            title: ans.roleTitle,
-            salary: ans.roleSalary,
-            department_id: ans.departmentId,
+                title: ans.roleTitle,
+                salary: ans.roleSalary,
+                department_id: ans.departmentId,
             }
         );
-        trackerMenu();
-        })   
-    })
+        viewRoles();
+        });
+    });
 };
 
 const addEmployee = () => {
-    db.query(`SELECT * FROM role`, (err, roles) => {
+    db.query(`SELECT * FROM roles`, (err, roles) => {
         if (err) console.log(err);
         roles = roles.map((role) => {
             return {
@@ -143,7 +146,7 @@ const addEmployee = () => {
                 value: role.id,
             }
         })
-        inquirer.prompt(
+        inquirer.prompt([
             {
                 type: 'input',
                 name: 'firstName',
@@ -166,7 +169,7 @@ const addEmployee = () => {
                 message: 'Enter the manager ID of the employee.',
                 choices: [3, 6]
             }
-        )
+        ])
         .then(ans => {
             db.query(`INSERT INTO employee SET ?`,
             {
@@ -175,7 +178,7 @@ const addEmployee = () => {
                 role_id: ans.role,
                 manager_id: ans.managerId
             })
-            trackerMenu();
+            viewEmployees();
         })
     })
 };
@@ -189,7 +192,7 @@ const updateEmployee = () => {
             }
         })
 
-        db.query(`SELECT * FROM role`, (err, roles) => {
+        db.query(`SELECT * FROM roles`, (err, roles) => {
             roles = roles.map((role) => {
                 return {
                     name: role.title,
@@ -224,4 +227,4 @@ const updateEmployee = () => {
             })
         })
     })
-}
+};
