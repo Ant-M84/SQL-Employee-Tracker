@@ -1,13 +1,18 @@
 // Call dependencies //
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
-
+const cTable = require('console.table');
 
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
     database: 'employee_db'
+});
+
+db.connect((err) => {
+    if (err) throw err;
+trackerMenu();
 });
 
 const trackerMenu = () => {
@@ -26,8 +31,8 @@ const trackerMenu = () => {
             'Exit',
             ],
     })
-    .then((ans) => {
-        switch (ans.action) {
+    .then(ans => {
+        switch (ans.options) {
             case 'View Departments': viewDepartment();
                 break;
             case 'View Roles': viewRoles();
@@ -53,22 +58,22 @@ const trackerMenu = () => {
 const viewDepartment = () => {
     db.query(`SELECT * FROM department`, (err, res) => {
         err ? console.error(err) : console.table(res);
-    });
-    trackerMenu();
+        trackerMenu();
+    }) 
 };
 
 const viewRoles = () => {
     db.query(`SELECT * FROM roles`, (err, res) => {
         err ? console.error(err) : console.table(res);
-    });
-    trackerMenu();
+        trackerMenu();
+    })
 };
 
 const viewEmployees = () => {
     db.query(`SELECT * FROM employee`, (err, res) => {
         err ? console.error(err) : console.table(res);   
-    });
-    trackerMenu();
+        trackerMenu();
+    })
 };
 
 const addDepartment = () => {
@@ -79,14 +84,14 @@ const addDepartment = () => {
         name: "addDepartment"
         },
     )
-    .then((ans) => {
+    .then(ans => {
         db.query(`INSERT INTO department SET ?`,
             {
                 name: ans.addDepartment,
-            },
-            );         
-        });
-        viewDepartment();   
+            }
+            );    
+            trackerMenu();    
+        })
 };
 
 const addRole = () => {
@@ -97,7 +102,7 @@ const addRole = () => {
                 name: department.name,
                 value: department.id,
             }
-        });
+        })
         inquirer.prompt (
         {
             type: 'input',
@@ -114,17 +119,17 @@ const addRole = () => {
             message: "Which department is the role in?",
             choices: departments,
             name: departmentId
-        },
+        }
     )
-    .then((ans) => {
+    .then(ans => {
         db.query(`INSERT INTO role SET ?`,
             {
             title: ans.roleTitle,
             salary: ans.roleSalary,
             department_id: ans.departmentId,
-            },
+            }
         );
-    viewRoles();
+        trackerMenu();
         })   
     })
 };
@@ -136,8 +141,8 @@ const addEmployee = () => {
             return {
                 name: role.title,
                 value: role.id,
-            };
-        });
+            }
+        })
         inquirer.prompt(
             {
                 type: 'input',
@@ -160,7 +165,7 @@ const addEmployee = () => {
                 name: 'managerId',
                 message: 'Enter the manager ID of the employee.',
                 choices: [3, 6]
-            },
+            }
         )
         .then(ans => {
             db.query(`INSERT INTO employee SET ?`,
@@ -169,9 +174,10 @@ const addEmployee = () => {
                 last_name: ans.lastName,
                 role_id: ans.role,
                 manager_id: ans.managerId
-            });
-        });
-    });
+            })
+            trackerMenu();
+        })
+    })
 };
 
 const updateEmployee = () => {
@@ -180,8 +186,8 @@ const updateEmployee = () => {
             return {
                 name: `${employee.first_name} ${employee.last_name}`,
                 value: employee.id,
-            };
-        });
+            }
+        })
 
         db.query(`SELECT * FROM role`, (err, roles) => {
             roles = roles.map((role) => {
@@ -189,7 +195,7 @@ const updateEmployee = () => {
                     name: role.title,
                     value: role.id,
                 }
-            });
+            })
             inquirer.prompt(
                 {
                     type: 'list',
@@ -204,7 +210,7 @@ const updateEmployee = () => {
                     choices: roles,
                 }
             )
-            .then((ans) => {
+            .then(ans => {
                 db.query(`UPDATE employee SET ? WHERE ?`,
                 [
                     {
@@ -213,14 +219,9 @@ const updateEmployee = () => {
                     {
                         id: ans.selectEmployee,
                     }
-                ]);
-            viewRoles();
-            });
-        });
-    });
-};
-
-db.connect((err) => {
-    if (err) throw err;
-trackerMenu();
-});
+                ])
+                trackerMenu();
+            })
+        })
+    })
+}
