@@ -93,7 +93,7 @@ const addDepartment = () => {
                 name: ans.addDepartment,
             }
             );    
-            trackerMenu();    
+            viewDepartment();    
         })
 };
 
@@ -223,7 +223,7 @@ const updateEmployee = () => {
                         id: ans.selectEmployee,
                     }
                 ])
-                trackerMenu();
+                viewEmployees();
             })
         })
     })
