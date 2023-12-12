@@ -12,7 +12,7 @@ This application utilizes Node.js, Inquirer and MySQL to create and manage a bac
 
 Clone the repository to the desired location on your system before opening the root directory in the integrated terminal. Install the required packages by running the command 'npm i'.
 
-To initialize the database, open MySQL in the integrated terminal using your credentials. Then generate the database by running the command 'source db/schema.sql;', seed the database by running the command 'source db/seeds.sql;'.
+To initialize the database, open MySQL in the integrated terminal using your credentials. Then generate the database by running the command 'source db/schema.sql;', seed the database by running the command 'source db/seeds.sql;'.  You may then exit MySQL.
 
 ## Usage
 
@@ -20,4 +20,5 @@ To run the application, run the command 'node server' in the integrated terminal
 
 Choose from the menu options to either view the databases or select an option to modify a specific database and follow the prompts to select and input data for the specific selection.
 
-_video link_
+Tutorial Video:
+https://drive.google.com/file/d/1zkuCY7qeOTVEB1cwbBJoAJVw8H7thCv7/view
